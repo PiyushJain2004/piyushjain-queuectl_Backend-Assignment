@@ -1,80 +1,80 @@
 🚀 QueueCTL – Backend Developer Assignment
+🧠 Project Overview
 
-🧠 A CLI-based background job queue system built using Node.js and SQLite, for Flam’s Backend Developer Internship assignment.
+A CLI-based background job queue system built using Node.js and SQLite for Flam’s Backend Developer Internship Assignment.
 
-QueueCTL allows you to:
-✅ Enqueue background jobs
-✅ Run multiple worker processes
-✅ Retry failed jobs with exponential backoff
-✅ Move permanently failed jobs to a Dead Letter Queue (DLQ)
-✅ Persist data across restarts
+QueueCTL lets developers enqueue, process, retry, and manage background jobs efficiently — with persistence, exponential backoff, and dead-letter queue (DLQ) support.
 
-⚙️ Tech Stack`
+🌟 Core Features
+
+✅ Job Enqueuing: Add and persist background jobs in SQLite
+⚙️ Concurrent Workers: Run multiple worker processes simultaneously
+🔁 Retry Mechanism: Auto-retry failed jobs with exponential backoff
+🧺 Dead Letter Queue (DLQ): Store permanently failed jobs for manual retry
+💾 Persistent Storage: Jobs survive restarts via SQLite
+🧹 Graceful Shutdown: Ensures running jobs complete before stopping
+
+⚙️ Tech Stack
 Component	Technology
 🧑‍💻 Language	Node.js (v18+)
 🗃️ Database	SQLite (via better-sqlite3)
 🧭 CLI Framework	Commander.js
 ⚡ Process Execution	child_process.exec
-🪄 Optional Utility	uuid for unique IDs
+🪄 Utility	uuid (for unique job IDs)
 🎯 Objective
 
-Build a production-grade queue system that supports:
+Build a production-grade queue system capable of:
 
-🧾 Enqueuing and managing background jobs
+🧾 Managing and executing queued background jobs
 
-⚙️ Running multiple workers concurrently
+⚙️ Running multiple concurrent worker processes
 
-🔁 Automatic retries for failed jobs
+🔁 Automatically retrying failed jobs with exponential backoff
 
-⏱️ Exponential backoff between retries
+🧺 Moving permanently failed jobs to a Dead Letter Queue
 
-💾 Persistent job storage across restarts
+💾 Persisting job data across restarts
 
-🧺 Dead Letter Queue (DLQ) for failed jobs
+🧩 Providing full CLI-based control and configuration
 
-🧩 CLI-based configuration and management
-
-⚙️ System Requirements
+🧩 System Requirements
 🔹 1. Job Execution
 
-Each worker executes a shell command (e.g., echo hello, timeout /t 2 && echo Done).
-
+Each worker executes a shell command (e.g. echo hello, timeout /t 2 && echo Done).
 Exit codes determine success or failure.
-
 Failed commands trigger automatic retries.
 
 🔹 2. Retry & Backoff
 
 Implements exponential backoff:
 
-delay = base ^ attempts   (in seconds)
+delay = base ^ attempts  (in seconds)
 
 
-Moves a job to the DLQ after exceeding max_retries.
+After exceeding max_retries, a job is moved to the Dead Letter Queue (DLQ).
 
 🔹 3. Persistence
 
-Uses SQLite (queue.db) to persist job data.
-
-Jobs survive restarts.
+Jobs and configurations are stored in queue.db (SQLite).
+✅ Data survives restarts and crash recoveries.
 
 🔹 4. Worker Management
 
-Multiple workers process jobs in parallel.
+Multiple workers process jobs concurrently
 
-Prevents duplicate job execution using atomic DB locking.
+Atomic DB locking prevents duplicate execution
 
-Graceful shutdown ensures current job completion before exit.
+Graceful shutdown ensures current job completion before exit
 
 🔹 5. Configuration
 
-CLI supports modifying:
+CLI supports modifying runtime configurations like:
 
 max_retries
 
 backoff_base
 
-🧩 Job Schema
+🧱 Job Schema
 {
   "id": "unique-job-id",
   "command": "echo Hello World",
@@ -87,7 +87,7 @@ backoff_base
 
 💻 CLI Commands
 Category	Command	Description
-🏁 Initialize	node queuectl.js init	Create DB and default config
+🏁 Initialize	node queuectl.js init	Create DB and default configuration
 📦 Enqueue	node queuectl.js enqueue '{"id":"job1","command":"echo hi"}'	Add a new job
 ⚙️ Workers	node queuectl.js worker start --count 2	Start N workers
 	node queuectl.js worker stop	Stop workers gracefully
@@ -108,20 +108,14 @@ graph TD
     G -->|Exceeded Retries| H[Dead Letter Queue 🧺]
     H -->|Manual Retry| C
 
+⚙️ Component Highlights
 
-Component Highlights:
-
-🧭 CLI: Built using Commander.js for intuitive command syntax
-
+🧭 CLI: Built using Commander.js for an intuitive command experience
 💾 SQLite: Persistent job and config storage
-
 ⚙️ Worker Processes: Spawned via child_process.fork() for concurrency
-
-🔁 Retry Logic: Uses exponential backoff (base ^ attempts)
-
+🔁 Retry Logic: Implements exponential backoff (base ^ attempts)
 🧺 DLQ: Stores permanently failed jobs with error details
-
-🧹 Graceful Shutdown: Handles SIGINT and SIGTERM
+🧹 Graceful Shutdown: Handles SIGINT and SIGTERM for safe exits
 
 🧪 Example Run
 🪄 Step 1: Initialize and Enqueue Jobs
@@ -134,9 +128,7 @@ node queuectl.js list --state pending
 ⚙️ Step 3: Start Workers
 node queuectl.js worker start --count 2
 
-
-Sample Output:
-
+🧾 Sample Output
 Started 2 workers (PIDs: 9704, 19032)
 [9704] Executing job job1: echo Hello from job1
 [9704] Job job1 completed
@@ -165,13 +157,10 @@ node queuectl.js dlq list
 node queuectl.js status
 
 
-✅ Expected Results
+✅ Expected Results:
 
-Successful jobs: echo → completed
+Successful commands → Completed
 
-Invalid commands: retried → DLQ
+Invalid commands → Retried → DLQ
 
-Persistent job data in queue.db
-
-## 🎥 Demo Video
-[▶️ Watch the working demo here](https://drive.google.com/file/d/1pIaAZOQPEUbToQdrECoN37PO0wPZcl15/view?usp=sharing)
+Jobs persist in queue.db across restarts
